@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oreo Media Management</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🍪 Oreo Media Management</h1>
+        <p>Manage your media files with ease</p>
+      </header>
+
+      <div class="upload-section">
+        <h2>Upload New File</h2>
+        <form id="uploadForm" class="upload-form">
+          <div class="form-group">
+            <label for="fileInput">Choose File:</label>
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*,video/*,.pdf,.doc,.docx"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="titleInput">Title:</label>
+            <input
+              type="text"
+              id="titleInput"
+              placeholder="Enter file title"
+              required
+            />
+          </div>
+          <button type="submit" class="upload-btn">Upload File</button>
+        </form>
+        <div id="uploadProgress" class="upload-progress hidden">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <p id="progressText">Uploading...</p>
+        </div>
+      </div>
+
+      <div class="media-section">
+        <h2>Current Media</h2>
+        <div class="media-controls">
+          <select id="typeFilter">
+            <option value="">All Types</option>
+            <option value="IMAGE">Images</option>
+            <option value="VIDEO">Videos</option>
+            <option value="DOCUMENT">Documents</option>
+          </select>
+          <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+        </div>
+        <div id="mediaGrid" class="media-grid">
+          <!-- Media items will be loaded here -->
+        </div>
+        <div id="loading" class="loading hidden">Loading media...</div>
+        <div id="noMedia" class="no-media hidden">No media files found</div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2336 @@
+{
+    "info": {
+        "name": "Oreo API",
+        "description": "Comprehensive API collection for Oreo Media Management Platform - Engine Tom ecommerce media service",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://167.71.201.117:3018",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "api/v1",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "test-user-{{$randomUUID}}",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "session_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "media_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "config_key",
+            "value": "maxFileSize",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health & Status",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "health"
+                            ]
+                        },
+                        "description": "Check if the API is healthy and running"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Root Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                ""
+                            ]
+                        },
+                        "description": "Get welcome message from the API"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Health check and status endpoints"
+        },
+        {
+            "name": "File Upload",
+            "item": [
+                {
+                    "name": "Initialize Chunked Upload",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"fileName\": \"large-file.mp4\",\n  \"fileSize\": 52428800,\n  \"mimeType\": \"video/mp4\",\n  \"chunkSize\": 1048576,\n  \"title\": \"My Video File\",\n  \"altText\": \"Video description\",\n  \"description\": \"Detailed video description\",\n  \"associatedProduct\": \"product-123\",\n  \"usageRights\": \"Commercial use allowed\",\n  \"isPublic\": true,\n  \"mediaType\": \"VIDEO\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/init",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "init"
+                            ]
+                        },
+                        "description": "Initialize a chunked upload session for large files"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload File Chunk",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"sessionToken\": \"{{session_token}}\",\n  \"chunkNumber\": 1,\n  \"chunkData\": \"base64_encoded_chunk_data\",\n  \"totalChunks\": 50\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/chunk",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "chunk"
+                            ]
+                        },
+                        "description": "Upload a single chunk of a file"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload Whole File",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "File to upload (max 100MB)"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "My Media File",
+                                    "type": "text",
+                                    "description": "SEO-friendly title"
+                                },
+                                {
+                                    "key": "altText",
+                                    "value": "Alt text for accessibility",
+                                    "type": "text",
+                                    "description": "Alt text for accessibility"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Detailed description",
+                                    "type": "text",
+                                    "description": "Detailed description"
+                                },
+                                {
+                                    "key": "associatedProduct",
+                                    "value": "product-123",
+                                    "type": "text",
+                                    "description": "Associated product ID"
+                                },
+                                {
+                                    "key": "usageRights",
+                                    "value": "Commercial use allowed",
+                                    "type": "text",
+                                    "description": "Usage rights/license"
+                                },
+                                {
+                                    "key": "isPublic",
+                                    "value": "true",
+                                    "type": "text",
+                                    "description": "Whether media should be public"
+                                },
+                                {
+                                    "key": "mediaType",
+                                    "value": "IMAGE",
+                                    "type": "text",
+                                    "description": "Media type (IMAGE, VIDEO, DOCUMENT, AUDIO)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/whole-file",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "whole-file"
+                            ]
+                        },
+                        "description": "Upload a complete file in single request (max 100MB). Note: isPublic defaults to true if not provided."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Upload Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/status/{{session_token}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "status",
+                                "{{session_token}}"
+                            ]
+                        },
+                        "description": "Get status of chunked upload session"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Upload",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/cancel/{{session_token}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "cancel",
+                                "{{session_token}}"
+                            ]
+                        },
+                        "description": "Cancel an active upload session"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Resume Upload",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/resume/{{session_token}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "resume",
+                                "{{session_token}}"
+                            ]
+                        },
+                        "description": "Resume an interrupted upload session"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "File upload endpoints with chunked upload support"
+        },
+        {
+            "name": "Image Processing",
+            "item": [
+                {
+                    "name": "Optimize Image",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Image file to optimize"
+                                },
+                                {
+                                    "key": "quality",
+                                    "value": "60",
+                                    "type": "text",
+                                    "description": "Quality setting (1-100) - will be converted to number"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "webp",
+                                    "type": "text",
+                                    "description": "Output format (jpeg, png, webp, avif)"
+                                },
+                                {
+                                    "key": "width",
+                                    "value": "800",
+                                    "type": "text",
+                                    "description": "Target width (optional)"
+                                },
+                                {
+                                    "key": "height",
+                                    "value": "600",
+                                    "type": "text",
+                                    "description": "Target height (optional)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/image-processing/optimize",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "image-processing",
+                                "optimize"
+                            ]
+                        },
+                        "description": "Optimize an uploaded image with various options"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate Thumbnail",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Image file to create thumbnail from"
+                                },
+                                {
+                                    "key": "width",
+                                    "value": "300",
+                                    "type": "text",
+                                    "description": "Thumbnail width"
+                                },
+                                {
+                                    "key": "height",
+                                    "value": "300",
+                                    "type": "text",
+                                    "description": "Thumbnail height"
+                                },
+                                {
+                                    "key": "quality",
+                                    "value": "80",
+                                    "type": "text",
+                                    "description": "Thumbnail quality (1-100) - will be converted to number"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/image-processing/thumbnail",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "image-processing",
+                                "thumbnail"
+                            ]
+                        },
+                        "description": "Generate thumbnail from uploaded image"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Convert Image Format",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Image file to convert"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "avif",
+                                    "type": "text",
+                                    "description": "Target format (jpeg, png, webp, avif)"
+                                },
+                                {
+                                    "key": "quality",
+                                    "value": "85",
+                                    "type": "text",
+                                    "description": "Output quality (1-100) - will be converted to number"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/image-processing/convert",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "image-processing",
+                                "convert"
+                            ]
+                        },
+                        "description": "Convert image to different format"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Batch Optimize Images",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "files",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Multiple image files to optimize"
+                                },
+                                {
+                                    "key": "quality",
+                                    "value": "70",
+                                    "type": "text",
+                                    "description": "Quality setting (1-100) - will be converted to number"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "jpeg",
+                                    "type": "text",
+                                    "description": "Output format (jpeg, png, webp, avif)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/image-processing/batch-optimize",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "image-processing",
+                                "batch-optimize"
+                            ]
+                        },
+                        "description": "Batch optimize multiple images at once"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Image Metadata",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/image-processing/metadata/{{filename}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "image-processing",
+                                "metadata",
+                                "{{filename}}"
+                            ]
+                        },
+                        "description": "Get comprehensive metadata for an image file"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Image processing and optimization endpoints"
+        },
+        {
+            "name": "Video Processing",
+            "item": [
+                {
+                    "name": "Optimize Video",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to optimize (MP4, MOV, AVI, WebM, MKV - Max 500MB)"
+                                },
+                                {
+                                    "key": "crf",
+                                    "value": "28",
+                                    "type": "text",
+                                    "description": "Quality setting (18-51, lower = better quality, default: 28)"
+                                },
+                                {
+                                    "key": "audioBitrate",
+                                    "value": "128k",
+                                    "type": "text",
+                                    "description": "Audio bitrate (default: 128k, options: 96k, 128k, 192k, 256k, 320k)"
+                                },
+                                {
+                                    "key": "thumbnailTimestamp",
+                                    "value": "00:00:01",
+                                    "type": "text",
+                                    "description": "Timestamp for thumbnail (format: HH:MM:SS or percentage like 50%)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/optimize",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "optimize"
+                            ]
+                        },
+                        "description": "Compress and optimize video files with H.264 codec. Also generates a thumbnail from the video."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Convert to WebM",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to convert to WebM format"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/convert-webm",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "convert-webm"
+                            ]
+                        },
+                        "description": "Convert video to WebM format using VP9 codec and Opus audio"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Trim Video",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to trim"
+                                },
+                                {
+                                    "key": "startTime",
+                                    "value": "00:00:10",
+                                    "type": "text",
+                                    "description": "Start time (format: HH:MM:SS or seconds)"
+                                },
+                                {
+                                    "key": "duration",
+                                    "value": "00:00:30",
+                                    "type": "text",
+                                    "description": "Duration to extract (format: HH:MM:SS or seconds, optional)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/trim",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "trim"
+                            ]
+                        },
+                        "description": "Trim video from start time for specified duration"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Rotate Video",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to rotate"
+                                },
+                                {
+                                    "key": "rotation",
+                                    "value": "90",
+                                    "type": "text",
+                                    "description": "Rotation angle (90, 180, or 270 degrees)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/rotate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "rotate"
+                            ]
+                        },
+                        "description": "Rotate video by 90, 180, or 270 degrees"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Change Video Speed",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to process"
+                                },
+                                {
+                                    "key": "speed",
+                                    "value": "2",
+                                    "type": "text",
+                                    "description": "Speed multiplier (0.25-4.0, where 1.0 is normal speed)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/speed",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "speed"
+                            ]
+                        },
+                        "description": "Change video playback speed (slow motion or fast forward)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Extract Audio",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to extract audio from"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "mp3",
+                                    "type": "text",
+                                    "description": "Audio format (mp3, aac, or wav)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/extract-audio",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "extract-audio"
+                            ]
+                        },
+                        "description": "Extract audio track from video as MP3, AAC, or WAV"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Text Watermark",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to watermark"
+                                },
+                                {
+                                    "key": "text",
+                                    "value": "© Your Brand 2025",
+                                    "type": "text",
+                                    "description": "Watermark text"
+                                },
+                                {
+                                    "key": "position",
+                                    "value": "bottom-right",
+                                    "type": "text",
+                                    "description": "Position: top-left, top-right, bottom-left, bottom-right, center"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/watermark",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "watermark"
+                            ]
+                        },
+                        "description": "Add text watermark to video at specified position"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate Multiple Thumbnails",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to generate thumbnails from"
+                                },
+                                {
+                                    "key": "timestamps",
+                                    "value": "[\"00:00:05\", \"00:00:15\", \"00:00:30\"]",
+                                    "type": "text",
+                                    "description": "JSON array of timestamps (HH:MM:SS or seconds)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/multiple-thumbnails",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "multiple-thumbnails"
+                            ]
+                        },
+                        "description": "Generate multiple thumbnails at different timestamps"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate Multi-Quality Videos",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Video file to generate multiple qualities from"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/multi-quality",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "multi-quality"
+                            ]
+                        },
+                        "description": "Generate video in multiple qualities (360p, 480p, 720p, 1080p)"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Video Processing (ID-Based)",
+            "item": [
+                {
+                    "name": "Optimize Video by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"crf\": 28,\n  \"audioBitrate\": \"128k\",\n  \"thumbnailTimestamp\": \"00:00:01\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/optimize",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "optimize"
+                            ]
+                        },
+                        "description": "Process an existing video from media library by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Trim Video by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"startTime\": \"00:00:10\",\n  \"duration\": \"00:00:30\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/trim",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "trim"
+                            ]
+                        },
+                        "description": "Trim existing video from media library"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Watermark by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"text\": \"© Your Brand 2025\",\n  \"position\": \"bottom-right\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/watermark",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "watermark"
+                            ]
+                        },
+                        "description": "Add watermark to existing video"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Multi-Quality by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/multi-quality",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "multi-quality"
+                            ]
+                        },
+                        "description": "Generate multiple quality versions of existing video (360p, 480p, 720p, 1080p)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Extract Audio by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"format\": \"mp3\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/extract-audio",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "extract-audio"
+                            ]
+                        },
+                        "description": "Extract audio from existing video"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Concatenate Videos by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaIds\": [\"cm1abc123xyz\", \"cm1def456uvw\", \"cm1ghi789rst\"],\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/concatenate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "concatenate"
+                            ]
+                        },
+                        "description": "Merge multiple videos into a single video file. Requires at least 2 videos."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Convert Format by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"targetFormat\": \"mp4\",\n  \"hwAccel\": \"nvenc\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/convert-format",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "convert-format"
+                            ]
+                        },
+                        "description": "Convert video to different formats (mp4, avi, mov, mkv) with optional hardware acceleration (nvenc, videotoolbox, vaapi)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Compress with Bitrate Mode",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"bitrateMode\": \"vbr\",\n  \"bitrate\": \"2000k\",\n  \"crf\": 23,\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/compress-bitrate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "compress-bitrate"
+                            ]
+                        },
+                        "description": "Compress video using configurable bitrate modes: cbr (constant), vbr (variable), abr (average)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Two-Pass Encode by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"bitrate\": \"2500k\",\n  \"resolution\": \"1920x1080\",\n  \"folderId\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/two-pass-encode",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "two-pass-encode"
+                            ]
+                        },
+                        "description": "High-quality two-pass encoding for optimal quality-to-size ratio. Best for final production output."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Detect Resolution by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/detect-resolution",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "detect-resolution"
+                            ]
+                        },
+                        "description": "Detect and retrieve comprehensive video metadata: resolution, duration, bitrate, fps, codec, format"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Validate Video by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mediaId\": \"cm1abc123xyz\",\n  \"minWidth\": 1280,\n  \"minHeight\": 720,\n  \"maxDuration\": 300\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/video/by-id/validate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "video",
+                                "by-id",
+                                "validate"
+                            ]
+                        },
+                        "description": "Validate video against specified requirements (min resolution, max duration). Returns validation result with metadata."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Process existing videos from media library using media ID - no re-upload needed!"
+        },
+        {
+            "name": "Storage Configuration",
+            "item": [
+                {
+                    "name": "Get Storage Info",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/storage/info",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "storage",
+                                "info"
+                            ]
+                        },
+                        "description": "Get current storage configuration information"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Validate Storage Configuration",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/storage/validate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "storage",
+                                "validate"
+                            ]
+                        },
+                        "description": "Validate current storage configuration"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate Nginx Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/storage/nginx-config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "storage",
+                                "nginx-config"
+                            ]
+                        },
+                        "description": "Generate nginx configuration for local storage"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Cloud Storage Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/storage/cloud-config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "storage",
+                                "cloud-config"
+                            ]
+                        },
+                        "description": "Get cloud storage configuration (without sensitive data)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Local Storage Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/storage/local-config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "storage",
+                                "local-config"
+                            ]
+                        },
+                        "description": "Get local storage configuration"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Storage configuration and management endpoints"
+        },
+        {
+            "name": "Media Management",
+            "item": [
+                {
+                    "name": "Get All Media",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media"
+                            ]
+                        },
+                        "description": "Get all media entries"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Media by Type",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media?type=IMAGE",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media"
+                            ],
+                            "query": [
+                                {
+                                    "key": "type",
+                                    "value": "IMAGE",
+                                    "description": "Filter by media type (IMAGE, VIDEO, DOCUMENT)"
+                                }
+                            ]
+                        },
+                        "description": "Get media entries filtered by type"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Media by User",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media?userId={{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media"
+                            ],
+                            "query": [
+                                {
+                                    "key": "userId",
+                                    "value": "{{user_id}}",
+                                    "description": "Filter by user ID"
+                                }
+                            ]
+                        },
+                        "description": "Get media entries filtered by user"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Media by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media/{{media_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media",
+                                "{{media_id}}"
+                            ]
+                        },
+                        "description": "Get specific media entry by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Media Entry",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"filename\": \"test-image.jpg\",\n  \"originalName\": \"test-image.jpg\",\n  \"mimeType\": \"image/jpeg\",\n  \"size\": 1024000,\n  \"path\": \"uploads/test-image.jpg\",\n  \"type\": \"IMAGE\",\n  \"width\": 1920,\n  \"height\": 1080,\n  \"userId\": \"{{user_id}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media"
+                            ]
+                        },
+                        "description": "Create a new media entry"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Media Entry",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"originalName\": \"updated-image.jpg\",\n  \"metadata\": {\n    \"description\": \"Updated image description\"\n  }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media/{{media_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media",
+                                "{{media_id}}"
+                            ]
+                        },
+                        "description": "Update a media entry"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Media Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"COMPLETED\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media/{{media_id}}/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media",
+                                "{{media_id}}",
+                                "status"
+                            ]
+                        },
+                        "description": "Update media processing status"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Media Entry",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/media/{{media_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "media",
+                                "{{media_id}}"
+                            ]
+                        },
+                        "description": "Delete a media entry"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Media management CRUD operations"
+        },
+        {
+            "name": "Error Testing",
+            "item": [
+                {
+                    "name": "Invalid File Type",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Upload a non-image file (e.g., .txt)"
+                                },
+                                {
+                                    "key": "userId",
+                                    "value": "{{user_id}}",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/image",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "image"
+                            ]
+                        },
+                        "description": "Test error handling for invalid file types"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "File Too Large",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Upload a very large file"
+                                },
+                                {
+                                    "key": "userId",
+                                    "value": "{{user_id}}",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/upload/image",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "upload",
+                                "image"
+                            ]
+                        },
+                        "description": "Test error handling for oversized files"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Non-existent Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/nonexistent",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "nonexistent"
+                            ]
+                        },
+                        "description": "Test 404 error handling"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Error handling and edge case testing"
+        },
+        {
+            "name": "Configuration Management",
+            "item": [
+                {
+                    "name": "Get All Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config"
+                            ]
+                        },
+                        "description": "Get complete unified configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Config by Category",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/categories?category=STORAGE",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "categories"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": "STORAGE",
+                                    "description": "Filter by category (STORAGE, UPLOAD, MEDIA_PROCESSING, SECURITY, RATE_LIMITING, LOGGING, MONITORING, NGINX)"
+                                }
+                            ]
+                        },
+                        "description": "Get configuration by category (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Storage Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/storage",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "storage"
+                            ]
+                        },
+                        "description": "Get storage configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Upload Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/upload",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "upload"
+                            ]
+                        },
+                        "description": "Get upload configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Config",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"maxFileSize\": 104857600,\n  \"chunkSize\": 1048576,\n  \"enableImageOptimization\": true,\n  \"enableVideoProcessing\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config"
+                            ]
+                        },
+                        "description": "Update configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Configure Cloud Storage",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"provider\": \"aws\",\n  \"bucket\": \"my-media-bucket\",\n  \"region\": \"us-east-1\",\n  \"accessKeyId\": \"your-access-key\",\n  \"secretAccessKey\": \"your-secret-key\",\n  \"baseUrl\": \"https://my-bucket.s3.amazonaws.com\",\n  \"cdnUrl\": \"https://cdn.example.com\",\n  \"enableCdn\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/cloud-storage",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "cloud-storage"
+                            ]
+                        },
+                        "description": "Configure cloud storage (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Configure Upload Limits",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"maxFileSize\": 104857600,\n  \"chunkSize\": 1048576,\n  \"allowedImageTypes\": [\"image/jpeg\", \"image/png\", \"image/webp\", \"image/avif\"],\n  \"allowedVideoTypes\": [\"video/mp4\", \"video/avi\", \"video/mov\"],\n  \"allowedDocumentTypes\": [\"application/pdf\", \"application/msword\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/upload-limits",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "upload-limits"
+                            ]
+                        },
+                        "description": "Configure upload limits (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Config by Key",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/key/{{config_key}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "key",
+                                "{{config_key}}"
+                            ]
+                        },
+                        "description": "Get specific configuration by key (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Config by Key",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"value\": \"new-value\",\n  \"type\": \"STRING\",\n  \"category\": \"STORAGE\",\n  \"description\": \"Updated configuration\",\n  \"isEncrypted\": false,\n  \"isReadOnly\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/key/{{config_key}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "key",
+                                "{{config_key}}"
+                            ]
+                        },
+                        "description": "Update specific configuration by key (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Config by Key",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/key/{{config_key}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "key",
+                                "{{config_key}}"
+                            ]
+                        },
+                        "description": "Delete specific configuration by key (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Export Config",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "export"
+                            ]
+                        },
+                        "description": "Export configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Import Config",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"configurations\": [\n    {\n      \"key\": \"maxFileSize\",\n      \"value\": \"104857600\",\n      \"type\": \"NUMBER\",\n      \"category\": \"UPLOAD\",\n      \"description\": \"Maximum file size in bytes\",\n      \"isEncrypted\": false,\n      \"isReadOnly\": false\n    }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/import",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "import"
+                            ]
+                        },
+                        "description": "Import configuration (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reset to Defaults",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/config/reset",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "config",
+                                "reset"
+                            ]
+                        },
+                        "description": "Reset configuration to defaults (Admin only)"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Configuration management endpoints (Admin only)"
+        },
+        {
+            "name": "YouTube Media Fetcher",
+            "item": [
+                {
+                    "name": "Fetch Video Info",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/info",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "info"
+                            ]
+                        },
+                        "description": "Fetch YouTube video information and metadata"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Video Formats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/formats/dQw4w9WgXcQ",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "formats",
+                                "dQw4w9WgXcQ"
+                            ]
+                        },
+                        "description": "Get available formats for a YouTube video"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Initiate Download",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"videoId\": \"dQw4w9WgXcQ\",\n  \"formatId\": \"137\",\n  \"quality\": \"highest\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/download",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "download"
+                            ]
+                        },
+                        "description": "Initiate YouTube video download"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stream Video",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/stream/dQw4w9WgXcQ?format=137",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "stream",
+                                "dQw4w9WgXcQ"
+                            ],
+                            "query": [
+                                {
+                                    "key": "format",
+                                    "value": "137",
+                                    "description": "Format ID for streaming"
+                                }
+                            ]
+                        },
+                        "description": "Stream YouTube video content"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User Downloads",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/downloads",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "downloads"
+                            ]
+                        },
+                        "description": "Get user download history"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cleanup Expired",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{api_version}}/youtube/cleanup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{api_version}}",
+                                "youtube",
+                                "cleanup"
+                            ]
+                        },
+                        "description": "Clean up expired videos and downloads"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "YouTube media fetcher endpoints for video info, formats, downloads, and streaming"
+        },
+        {
+            "name": "API Documentation",
+            "item": [
+                {
+                    "name": "Swagger UI",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api"
+                            ]
+                        },
+                        "description": "Access Swagger UI documentation"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "API documentation endpoints"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Generate random user ID if not set",
+                    "if (!pm.environment.get('user_id')) {",
+                    "    pm.environment.set('user_id', 'test-user-' + Math.random().toString(36).substr(2, 9));",
+                    "}",
+                    "",
+                    "// Set timestamp for requests",
+                    "pm.environment.set('timestamp', new Date().toISOString());",
+                    "",
+                    "// Generate session token if not set",
+                    "if (!pm.environment.get('session_token')) {",
+                    "    pm.environment.set('session_token', 'session-' + Math.random().toString(36).substr(2, 9));",
+                    "}",
+                    "",
+                    "// Generate media ID if not set",
+                    "if (!pm.environment.get('media_id')) {",
+                    "    pm.environment.set('media_id', 'media-' + Math.random().toString(36).substr(2, 9));",
+                    "}"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Basic response validation",
+                    "pm.test('Response time is less than 5000ms', function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                    "});",
+                    "",
+                    "// Check if response is JSON for most endpoints",
+                    "if (pm.request.method !== 'GET' || pm.request.url.path.includes('api')) {",
+                    "    pm.test('Response is JSON', function () {",
+                    "        pm.response.to.be.json;",
+                    "    });",
+                    "}",
+                    "",
+                    "// Log response for debugging",
+                    "console.log('Response:', pm.response.text());"
+                ]
+            }
+        }
+    ]
+}

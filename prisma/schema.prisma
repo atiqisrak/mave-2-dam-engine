@@ -1,0 +1,430 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  password          String
+  role              Role               @default(USER)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  accessTokens      AccessToken[]
+  folderPermissions FolderPermission[]
+  folders           Folder[]
+  media             Media[]
+  mediaPermissions  MediaPermission[]
+  processedMedia    ProcessedMedia[]
+  uploadSessions    UploadSession[]
+
+  @@map("users")
+}
+
+model Media {
+  id                String              @id @default(cuid())
+  title             String?
+  originalName      String
+  storedFileName    String
+  mimeType          String
+  fileSize          Int
+  filePath          String
+  publicUrl         String?
+  cdnUrl            String?
+  mediaType         MediaType
+  width             Int?
+  height            Int?
+  duration          Int?
+  format            String?
+  orientation       Int?
+  altText           String?
+  description       String?
+  metadata          Json?
+  checksum          String?
+  status            MediaStatus         @default(PENDING)
+  processingStage   ProcessingStage     @default(UPLOADED)
+  uploadDate        DateTime            @default(now())
+  uploadedBy        String
+  associatedProduct String?
+  usageRights       String?
+  isPublic          Boolean             @default(true)
+  folderId          String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  uploadSessionId   String?             @unique
+  folder            Folder?             @relation(fields: [folderId], references: [id])
+  uploadSession     UploadSession?      @relation(fields: [uploadSessionId], references: [id])
+  user              User                @relation(fields: [uploadedBy], references: [id])
+  optimizations     MediaOptimization[]
+  permissions       MediaPermission[]
+  tags              MediaTag[]
+  variants          MediaVariant[]
+  chunks            UploadChunk[]
+
+  @@index([uploadedBy])
+  @@index([mediaType])
+  @@index([status])
+  @@index([uploadDate])
+  @@index([checksum])
+  @@index([folderId])
+  @@map("media")
+}
+
+model UploadSession {
+  id            String              @id @default(cuid())
+  sessionToken  String              @unique
+  totalChunks   Int
+  chunkSize     Int
+  totalFileSize Int
+  fileName      String
+  mimeType      String
+  checksum      String?
+  status        UploadSessionStatus @default(INITIATED)
+  expiresAt     DateTime
+  userId        String
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  media         Media?
+  chunks        UploadChunk[]
+  user          User                @relation(fields: [userId], references: [id])
+
+  @@index([sessionToken])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("upload_sessions")
+}
+
+model UploadChunk {
+  id            String        @id @default(cuid())
+  sessionId     String
+  chunkNumber   Int
+  chunkSize     Int
+  chunkData     String
+  checksum      String?
+  receivedAt    DateTime      @default(now())
+  mediaId       String?
+  media         Media?        @relation(fields: [mediaId], references: [id])
+  uploadSession UploadSession @relation(fields: [sessionId], references: [id])
+
+  @@unique([sessionId, chunkNumber])
+  @@index([sessionId, chunkNumber])
+  @@map("upload_chunks")
+}
+
+model MediaOptimization {
+  id               String           @id @default(cuid())
+  mediaId          String
+  optimizationType OptimizationType
+  quality          Int
+  fileSize         Int
+  filePath         String
+  publicUrl        String?
+  width            Int?
+  height           Int?
+  format           String?
+  processingTime   Int?
+  createdAt        DateTime         @default(now())
+  media            Media            @relation(fields: [mediaId], references: [id])
+
+  @@index([mediaId])
+  @@index([optimizationType])
+  @@map("media_optimizations")
+}
+
+model MediaVariant {
+  id          String      @id @default(cuid())
+  mediaId     String
+  variantType VariantType
+  width       Int?
+  height      Int?
+  filePath    String
+  publicUrl   String?
+  fileSize    Int
+  quality     Int
+  format      String
+  createdAt   DateTime    @default(now())
+  media       Media       @relation(fields: [mediaId], references: [id])
+
+  @@index([mediaId])
+  @@index([variantType])
+  @@map("media_variants")
+}
+
+model MediaTag {
+  id         String    @id @default(cuid())
+  tag        String
+  mediaId    String
+  confidence Float?
+  source     TagSource @default(MANUAL)
+  createdAt  DateTime  @default(now())
+  media      Media     @relation(fields: [mediaId], references: [id])
+
+  @@index([mediaId])
+  @@index([tag])
+  @@map("media_tags")
+}
+
+model Configuration {
+  id          String         @id @default(cuid())
+  key         String         @unique
+  value       String
+  type        ConfigType     @default(STRING)
+  category    ConfigCategory @default(GENERAL)
+  description String?
+  isEncrypted Boolean        @default(false)
+  isReadOnly  Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([category])
+  @@index([key])
+  @@map("configurations")
+}
+
+model Folder {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  path        String             @unique
+  parentId    String?
+  ownerId     String
+  isPublic    Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  permissions FolderPermission[]
+  owner       User               @relation(fields: [ownerId], references: [id])
+  parent      Folder?            @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children    Folder[]           @relation("FolderHierarchy")
+  media       Media[]
+
+  @@index([ownerId])
+  @@index([path])
+  @@index([parentId])
+  @@map("folders")
+}
+
+model AccessToken {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  name        String
+  description String?
+  userId      String
+  permissions Json
+  expiresAt   DateTime
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("access_tokens")
+}
+
+model MediaPermission {
+  id         String         @id @default(cuid())
+  mediaId    String
+  userId     String
+  permission PermissionType
+  grantedBy  String
+  grantedAt  DateTime       @default(now())
+  expiresAt  DateTime?
+  media      Media          @relation(fields: [mediaId], references: [id])
+  user       User           @relation(fields: [userId], references: [id])
+
+  @@unique([mediaId, userId])
+  @@index([mediaId])
+  @@index([userId])
+  @@map("media_permissions")
+}
+
+model FolderPermission {
+  id         String         @id @default(cuid())
+  folderId   String
+  userId     String
+  permission PermissionType
+  grantedBy  String
+  grantedAt  DateTime       @default(now())
+  expiresAt  DateTime?
+  folder     Folder         @relation(fields: [folderId], references: [id])
+  user       User           @relation(fields: [userId], references: [id])
+
+  @@unique([folderId, userId])
+  @@index([folderId])
+  @@index([userId])
+  @@map("folder_permissions")
+}
+
+model ProcessedMedia {
+  id                String          @id @default(cuid())
+  originalName      String
+  storedFileName    String
+  mimeType          String
+  fileSize          Int
+  filePath          String
+  publicUrl         String?
+  width             Int?
+  height            Int?
+  format            String
+  processType       ProcessType
+  quality           Int?
+  originalSize      Int?
+  compressionRatio  Float?
+  processingOptions Json?
+  sourceMediaId     String?
+  sourceType        SourceType
+  status            ProcessedStatus @default(TEMPORARY)
+  expiresAt         DateTime?
+  isPermanent       Boolean         @default(false)
+  isShared          Boolean         @default(false)
+  shareToken        String?         @unique
+  shareExpiresAt    DateTime?
+  userId            String
+  isPublic          Boolean         @default(false)
+  downloadCount     Int             @default(0)
+  viewCount         Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  user              User            @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([shareToken])
+  @@index([sourceMediaId])
+  @@index([createdAt])
+  @@map("processed_media")
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  AUDIO
+}
+
+enum MediaStatus {
+  PENDING
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+  DELETED
+}
+
+enum ProcessingStage {
+  UPLOADED
+  VALIDATING
+  PROCESSING
+  OPTIMIZING
+  GENERATING_VARIANTS
+  COMPLETED
+  FAILED
+}
+
+enum OptimizationType {
+  THUMBNAIL
+  COMPRESSED
+  RESIZED
+  FORMAT_CONVERTED
+  WATERMARKED
+  WEBP_CONVERTED
+  AVIF_CONVERTED
+}
+
+enum VariantType {
+  THUMBNAIL
+  SMALL
+  MEDIUM
+  LARGE
+  ORIGINAL
+  WEB_OPTIMIZED
+  MOBILE_OPTIMIZED
+}
+
+enum UploadSessionStatus {
+  INITIATED
+  UPLOADING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum TagSource {
+  MANUAL
+  AI
+  SYSTEM
+}
+
+enum ConfigType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  ARRAY
+}
+
+enum ConfigCategory {
+  GENERAL
+  DATABASE
+  STORAGE
+  SECURITY
+  UPLOAD
+  MEDIA_PROCESSING
+  NGINX
+  CLOUD_STORAGE
+  RATE_LIMITING
+  LOGGING
+  MONITORING
+}
+
+enum PermissionType {
+  READ
+  WRITE
+  DELETE
+  MANAGE
+  ADMIN
+}
+
+enum ProcessType {
+  OPTIMIZE
+  THUMBNAIL
+  CONVERT
+  RESIZE
+  WATERMARK
+  FORMAT_CHANGE
+}
+
+enum SourceType {
+  UPLOAD
+  MEDIA_LIBRARY
+  URL
+}
+
+enum ProcessedStatus {
+  TEMPORARY
+  PERMANENT
+  EXPIRED
+  DELETED
+}
+
+enum DownloadStatus {
+  PENDING
+  DOWNLOADING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
